@@ -1,23 +1,20 @@
-import ode
+import fbx, sys, ode, os
 
-world = ode.World()
-world.setGravity( (0,-9.81,0) )
+if len(sys.argv) < 2:
+    print >> sys.stderr, "Usage: python main.py /path/to/fbx/file"
+    sys.exit(2)
+if not os.path.isfile(sys.argv[1]):
+    sys.exit( "No such file: %s" % sys.argv[1] )
 
-body = ode.Body(world)
-mass = ode.Mass()
-mass.setSphere(2500.0, 0.05)
-mass.mass = 1.0
-body.setMass(mass)
+manager = fbx.FbxManager.Create()
+manager.SetIOSettings( fbx.FbxIOSettings.Create(manager, fbx.IOSROOT) )
+importer = fbx.FbxImporter.Create(manager, "")
 
-body.setPosition( (0,2,0) )
-body.addForce( (0,200,0) )
+b = importer.Initialize(os.path.abspath( sys.argv[1] ))
+if b == False:
+    sys.exit( importer.GetStatus().GetErrorString() )
 
-t = 0.0
-dt = 0.04
-while t < 2.0:
-    x,y,z = body.getPosition()
-    u,v,w = body.getLinearVel()
-    
-    print "%1.2fsec: pos=(%6.3f, %6.3f, %6.3f) vel=(%6.3f, %6.3f, %6.3f)" % (t, x, y, z, u, v, w)
-    world.step(dt)
-    t += dt
+scene = fbx.FbxScene.Create(manager, "default_scene")
+
+importer.Import(scene)
+importer.Destroy()
