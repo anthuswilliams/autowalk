@@ -40,13 +40,13 @@ class FbxTransform:
 
     return scene
 
-  def extract_model(self, scene)
+  def extract_model(self, scene):
     root_node = scene.GetRootNode()
-    if root_node.GetChildCount != 1:
-      raise "Multiple nodes in provided file. Which to use?"
+    if root_node.GetChildCount() != 1:
+      raise Exception("Multiple nodes in provided file. Which to use?")
     model = root_node.GetChild(0)
-    if not isinstance(model.getNodeAttribute, fbx.FbxMesh):
-      raise "Node should be a mesh!"
+    if not isinstance(model.GetNodeAttribute(), fbx.FbxMesh):
+      raise Exception("Node should be a mesh!")
 
 
 
