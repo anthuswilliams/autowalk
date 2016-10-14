@@ -20,7 +20,6 @@ class FbxTransform:
     importer = fbx.FbxImporter.Create(self.manager, "")
     if importer.Initialize(self.file_path) == False:
         return (1, importer.GetStatus().GetErrorString())
-
     scene = fbx.FbxScene.Create(self.manager, "default_scene")
     importer.Import(scene)
     importer.Destroy()
@@ -33,11 +32,8 @@ class FbxTransform:
       fbx.FbxSystemUnit.m.ConvertScene(scene)
     axis_reference = settings.GetAxisSystem()
     # in the statements below, the 1 refers to positive direction
-    if axis_reference.GetUpVector() != (fbx.FbxAxisSystem.eYAxis, 1) \
-      or axis_reference.GetFrontVector() != (fbx.FbxAxisSystem.eParityOdd, 1) \
-      or axis_reference.GetCoorSystem() != fbx.FbxAxisSystem.eRightHanded:
+    if settings.GetAxisSystem() != fbx.FbxAxisSystem(fbx.FbxAxisSystem.eMayaYUp):
       fbx.FbxAxisSystem(fbx.FbxAxisSystem.eMayaYUp).ConvertScene(scene)
-
     return scene
 
   def extract_model(self, scene):
@@ -47,6 +43,3 @@ class FbxTransform:
     model = root_node.GetChild(0)
     if not isinstance(model.GetNodeAttribute(), fbx.FbxMesh):
       raise Exception("Node should be a mesh!")
-
-
-
